@@ -1,0 +1,34 @@
+sudo apt update
+python -v
+sudo apt install python-minimal
+python -V
+sudo apt install python-pip
+sudo pip install mysql-connector-python
+sudo chown ubuntu:ubuntu -R /opt
+cd /opt
+mkdir rds
+cd rds
+sudo apt install mysql-common
+sudo apt install mysql-client
+wget https://storage.googleapis.com/skl-training/aws-codelabs/rds/employees.sql
+mysql -h mysql-db-instance.cybspxxck7ko.us-east-1.rds.amazonaws.com -u admin -p
+
+pip install mysql-connector-python-rf
+python rds.py
+
+
+SQS - Simple Queue Service
+	- Pull based Queue compared to SNS
+	- Do you have anything for me.
+	- Producer/Consumer of message
+	- SQS has to hold the data i.e guidelines how long to hold data the data, how to seamlessly deliver message to all consumers.
+	- Message have finite lifetimes.
+	- 2 Queues: FIFO & standard Queue
+		- Order of message vs Velocity of message is imp.
+		FiFo: First-in-first-out delivery, Exactly-once processing. Order is guarantee.
+		Standard: Best-effort ordering, At-least once delivery, occasionaly more than 1 copy of message is delivered.
+	- Limited data storage.
+	- Dead letter queue
+	In case consumers are unable to consume the message, the messages are transferred from Q from Redrive or dead queue.
+	
+AWS Athena

@@ -1,0 +1,163 @@
+Module#2
+
+IAM - Roles - Temporary User Credentials to access the resource.
+
+Deploy an application
+Instance or VM: CPU, Ram, Disk, OS, Network, Application Configuration
+
+Elastic Compute Cloud (EC2) 
+Compute is IaaS.
+
+EC2 can be initialized from a template (i.e blueprint) or cloning.
+
+7 step workflow for launching a EC2 instance.
+- Choose AMI
+- Choose Instance Type
+- Configure Instance
+- Add Storage
+- Add Tags
+- Configure Security Group
+- Review
+
+Own Image (AMI - Amazon Machine Image): 2 ways: OVA on S3 or find nearest fit and save as AMI.
+
+AMI - 
+	Root device type is on ebs (ephiremal) (storage volume) or instance store (temporary)
+	Virtulization Type: HVM
+	ENA - Enhanced Networking Avaliable or not.
+	ami-id is unique region wise. name can remain same.
+	regional resource like S3. If you need it in another region, you need to copy it to other region.
+	
+Placement Group - all EC2 instances are in same rack. Very low latency, high computation, single point of failure.
+	- Spread, Cluster, Partition.
+	- Clustered - physically close to each other (i.e same rack)
+	- Spread - 
+Placement Groups and Target Groups are different concepts.
+Placement Groups are used when you want your application which is running on multiple instances inside a Placement Group to deliver high performance. 
+This high performance is achieved by leveraging the placement of these instances, depending on the type of Placement Group 
+	( Spread - if you want the instances to spread across an hardware, 
+	Partition - Spread across logical partitions, 
+	Cluster - packs instances inside AZ ) the instances will be placed. 
+	You would need this when you realize there is a lot of network latency (subsequent performance degradation) due to interdependence 
+	and in order to minimize this you would want to place the instances close to each other and use Placement Group.
+
+Target Group on the other hand is used by an Application Load Balancer - When you create each listener rule while configuring Application Load Balancer, you specify a target group and conditions. 
+When a rule condition is met, traffic is forwarded to the corresponding target group.
+
+Inside each Target Group is a set of targets which are registered whose health are being monitored by the load balancer constantly.You can either specify Instance ID, IP Addresses or Lambda functions as these targets.
+
+Amazon Marketplace
+GIB - Giga Bytes (as multiples of 1024 Bytes), TIB, MIB
+
+VPC  - Virtual Private Cloud
+Subnet - Physical Seperation of AZ in the region
+
+Spot Instances - Demand and Supply Prices
+A fleet of spot instances will provide the most cost-effective solution for astateless,fault-tolerant use-case like batch jobs
+
+Stop vs Terminate: 
+	stop: Return VM to AWS, Disks are retained with you.
+	Terminate: return VM and Disks are returned back AWS. Nothing in your hands.
+	
+Tenancy:
+Multi tenancy if VM A belong to bank A and VM B to belong bank B even though both VM are on same host.
+Dedicated - Single host and VM
+Dedicated Host - Single Host with multiple VM belonging to same financial institution. Physical Server.
+
+T2 Unlimited - CPU Credits generated if cpu is not 100% used and when  goes beyond 100%, use it from cpu credits.
+CPU Credits should be used as fallback. Application should not depend on cpu credits and should depend on goto. Customers will experience latency if cpu is maxed as 100% due to 0 cpu credits.
+
+
+Hibernate - Max Hibernate Period is 60 days.
+
+Cassandara - 2 IP - one for internal communication and one for external communication.
+
+EBS Elastic Block Storage
+- General Purpose SSD
+- Provisioned IOPS
+- Magnetic
+- Cold - Attach, Non bootable Disk, Storing application generated Data.
+
+Suggestion:-
+	SSD - Gp2 - Most Workloads
+	SSD - Io1 - Mission Critical Application Dbs
+	HDD - SC1 - Big Data and Warehouse
+	HDD - St1 - File Servers
+	HDD - Standard - (magnetic taprs) workloads where data is rarely used.
+
+Protect Data on disk using KMS. boot Disc is not applicable. generate your own AMI for boot disc to be encrypted.
+
+Boot disc size is picked up depending on OS size. Ubuntu is 8 GiB, windows 30 GiB
+
+Elastic IP ??? vs public IP
+
+Possible to launch without key pair - yes
+
+yum repository for centos/AMI family & apt repository for debian family (ubuntu).
+
+security group is stateful.
+
+
+Load Balancer : cannot span across multiple regions but they can span across multiple availability zones.
+	- will give DNS
+	- stateful/stateless
+	- Across AZ.
+LB - Region Centric Service.
+
+Route 53 - DNS Service which is like a LB and help is achieving to redirection of traffic to different regions.
+
+
+Http/https - port 80 & 443 come be preconfigured.
+
+Target Groups - tells a Load Balancer where to direct traffic.
+	Target Types - instance, IP, Lambda
+
+Load Balancer as service - LB is able to connect to on prim instances using vpn.
+
+ALB - Layer 7, web based, http
+Network LB - Layer 4, tcp session is tied with same web server, scaling can be in millions.
+Classic LB - Layer 3, Directly attach to EC2 while Other LB talks to Target groups. Target Group concept is not there.
+Gateway LB - virual applicane
+	Elastic BeanStalk Service uses Classic LB.
+	
+Internal Load Balancer - Web application talks to Back end Database and not to expose DB.
+
+Instances Pricing: OnDemand, Spot, Reserved, Dedicated Hosts.
+
+Security Group -Firewall at VM level.
+
+Launch without Key pair - Possible during Scaling.
+
+Linux Instance
+default login name is ec2-user.
+sudo yum update
+sudo yum install http-server
+http://3.228.3.51/
+http://3.87.94.38/
+http://34.239.104.142/
+
+echo "web server 1" > /usr/share/httpd/noindex/index.html
+echo "ok 1" > /var/www/html/health.html
+
+
+Cost Optimization Pillar:-
+1. Automation - Auto Scaling
+2. Decommision Resources
+3. Cost - EC2 ASG
+4. Dynamic Supply
+5. Scheduling
+
+
+
+Internet Traffic -> Load Balancer -> Target group -> Auto Scaling group (ASG)
+	ASG is being launched by Launch Template (LT)
+
+Health Check Period - verifying machine is up and service is running.
+Warm Up Period - The period after which the new instance can come in ASG calculation for deciding the action to be taken.
+
+Request to start instance will start coming after health Check Period but for calculation, it will be after warm up period.
+
+
+
+
+

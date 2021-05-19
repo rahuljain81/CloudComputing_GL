@@ -1,0 +1,110 @@
+Networking on AWS
+VPC - Virtual Private Cloud.(Public & Private Subnets)
+CIDR - Bunch of IP Address
+Internet gateways, Route tables
+Jump Servers, Jump hosts, Bastion Hosts.
+
+
+Security group vs NACL
+	- Deny is not allowed in SG
+	- SG is at instance level while NACL is at Subnet level.
+	- NACL comes first when traffic is hit first from internet.
+	- In SG, by deault, inbound is deny and outboud/egress is allowed. So, in stateful case, any outbound will have automatic entry for inbound.
+
+VPC - logical paritioning of your network.
+	- Needs to have global list of IP addresses (specified using CIDR)
+	- VPC Peering - connecting multiple VPC
+	- Transitive Peering is not supported i.e VPC#1 -> VPC#2 -> VPC#3 doesnt mean VPC#1->VPC#3
+	- Default VPC is created by AWS.
+	- VPC dont cost but there is a limit.
+	- VPC has route table.
+	- IGW -Internet Gateway Table - which allows particule EC2 instance or network to go out.
+	
+	- VPC can run across AZ, Subnet is per AZ.
+	
+CIDR - Classes Inter Domain Routing.
+	- subset of CIDR going to Subset#1 and subset#2.
+	- a.b.c.d - 8 bits each = 32 bits each.
+	- a.b.c.d/e : e is prefix i.e starting e bits will remain fixed. remaining (32-e) define range of IP address.
+	- 5 IP address you wont get.
+		.0 - Network Address		
+		.1 - Amazon VPC Routing
+		.2 - DNS Resolution
+		.3 - Reserver for future
+		.255 - Broadcast
+		
+	- Primary and Secondary CIDR. - 4 more secondary CIDR blocks. Max 5 CIDR blocks.
+	- Size of existing CIDR blocks can't be increased or decreased.
+	
+Cloud Deployment Models - Public, Private, Community, Hybrid.
+
+Hybrid Model - On Prim is connected to AWS using VPN. CIDR on both sides is not overlapped.
+
+Amazon Direct Connect- Dedicated fibre (it is not going over internet) while VPN is going over internet.
+	- 1Gb/s up
+	
+Incremental Data Transfer - Snowball and Snowball Edge
+	- Suitcase size device and load up your data and it gets transferred.
+Snow Mobile - Truck which get parked next to your data centre. Massive Data Transfer.
+
+Internal IP address range:
+	10.0.0.0
+	172.16.0.0
+	192.168.0.0
+
+		
+Subnets -smaller part of VPC
+	- Loosely connected with AZ.
+	
+Internet Traffic -> Gateway -> Router -> Route Tables -> Network Access Control List (ACL) -> Security Groups ->Hit your resource i.e EC2.
+
+SRC IP + Epheraman Port (chosen at Random) <=> Dest IP + Port
+
+ACL - Stateless.
+	- if inbound is set, outbound is not set.
+while Security group is Stateful
+	- If inbound is set, outbound is set automatically.
+	
+VPC
+gl-vpc (10.0.0.0/16)
+inside this, one public subnet (10.0.1.0/24)
+one privte subnet (10.0.2.0/24) private#1
+one more private subnet (10.0.3.0/24) private#2
+
+for public subnet, internet gateway is required.
+custom route table (crt) -  associate to public subnet only.
+
+==================
+#!/bin/bash
+yum update -y
+yum install httpd -y
+service httpd start
+chkconfig httpd on
+IP_ADDR=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+echo "Manual Instance IP $IP_ADDR" > /var/www/html/index.html
+echo "ok"> /var/www/html/health.html
+===============
+SSH to EC2 Instance
+1. download pem file.
+2. use puttygen -> Load pem file -> save private key
+3. Open putty -> take public ip of ec2 -> connection -> ssh -> Auth -> load file generated at step 2 
+4. Prompt will come. username is ec2-user.
+
+chmod 400 gl.pem
+ssh -i gl.pem ec2-user@10.0.2.116
+===============
+
+
+	
+Web Application Firewall (WAF)
+- Global Service
+- Cloud Front vs Load balancer
+	LB is used for Dynamic Content Application (like lambda, etc)
+	Cloud Front is used in front of static content (i,e javascript, S3, html, images) and used in conjuction with point of presence.
+		So, it accelerates the delivery. so it has seperates cache, distributed cache.
+- Filters within a condition are always ORed while Conditions are ANDed.
+
+
+LB -> Target Group -> EC2 serving web traffic
+
+WAF -> ACL -> Rules -> Conditions (like 1. Cross Site Scripting 2. SQL Injection 3. Bad Bots, 4. Scanner 5. http flooding 6. IP Blaclist 7. Attach Protection DDos attack)
