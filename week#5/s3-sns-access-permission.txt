@@ -1,0 +1,21 @@
+{
+ "Version": "2012-10-17",
+ "Id": "217936969833",
+ "Statement": [
+  {
+   "Sid": "217936969833",
+   "Effect": "Allow",
+   "Principal": {
+    "Service": "s3.amazonaws.com"  
+   },
+   "Action": [
+    "SNS:Publish"
+   ],
+   "Resource": "arn:aws:sns:us-east-1:217936969833:sns-s3-topic",
+   "Condition": {
+      "ArnLike": { "aws:SourceArn": "arn:aws:s3:*:*:s3-sns-bucket" },
+      "StringEquals": { "aws:SourceAccount": "217936969833" }
+   }
+  }
+ ]
+}
