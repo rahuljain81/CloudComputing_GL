@@ -1,0 +1,43 @@
+Cloudwatch
+
+ubuntu:
+https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/QuickStartEC2Instance.html
+
+IAM Role: CloudWatchFullAccess Permission and attach to EC2 Instance.
+
+curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
+sudo apt install python-minimal
+sudo python ./awslogs-agent-setup.py --region us-east-1
+
+
+- Configuration file successfully saved at: /var/awslogs/etc/awslogs.conf
+- You can begin accessing new log events after a few moments at https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logs:
+- You can use 'sudo service awslogs start|stop|status|restart' to control the daemon.
+- To see diagnostic information for the CloudWatch Logs Agent, see /var/log/awslogs.log
+- You can rerun interactive setup using 'sudo python ./awslogs-agent-setup.py --region us-east-1 --only-generate-config'
+
+Custom Metric Monitoring
+Retention Period
+Period < 60 sec - 3 hours
+Period > 1min  - 15 days
+Period > 300 sec - 63 days
+period > 1 hours - 455 days (15 months)
+
+The Metric can't be deleted manually.
+
+Kinesis, Firehose, Analytics
+- Streaming analysd on fly
+- Streams/ Shards
+	Shard is uniquely identified sequence of data records in a stream. Read: support 5 transactions/sec for read and upto total data of 2Mb/sec. Write 1Kb/sec
+	A stream is composedof one m+or more shards, each of which provides a fixed unit of capacity.
+- Data Records - 3 things : sequence nu, parition key and data (i.e blob).
+- Partition key is used to group data by shards within a stream.
+
+SQS vs kinesis
+- Producer/Consumer vs V Dta
+- VT Delay vs Shard
+- Kinesis - Super fast 
+- Indivual Message vs Aggregate Message
+- 1 consumer vs Multiple Consumer processing at parallel.
+- Retry: Visibility Timeout vs Failed Message can block processing.
+
